@@ -21,9 +21,9 @@ fn encode_gif(
     }
 
     // Create the gif encoder.
+    let stdout = std::io::stdout();
     let mut encoder = gif::Encoder::new(
-        // stdout.
-        &mut std::io::stdout(),
+        &stdout,
         w as u16, h as u16,
         &color_map_u8,
     ).unwrap();
@@ -43,6 +43,12 @@ fn encode_gif(
         // Write the frame.
         encoder.write_frame(&frame).unwrap();
     }
+
+    // Drop the encoder.
+    drop(encoder);
+
+    // Drop stdout.
+    drop(stdout);
 }
 
 pub fn do_post_processing(
