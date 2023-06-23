@@ -1,12 +1,11 @@
-use std::sync::Arc;
+use std::{sync::Arc, collections::VecDeque};
 
-fn encode_mp4(images: Vec<Arc<Vec<u8>>>, w: u32, h: u32, framerate: u16) -> Vec<u8> {
+fn encode_mp4(images: VecDeque<Arc<Vec<u8>>>, w: u32, h: u32, framerate: u16) {
     // TODO
-    vec![]
 }
 
 fn encode_gif(
-    images: Vec<Arc<Vec<u8>>>, w: u32, h: u32, framerate: u16,
+    mut images: VecDeque<Arc<Vec<u8>>>, w: u32, h: u32, framerate: u16,
     color_map: Vec<u32>,
 ) {
     // Defines the sleep time.
@@ -29,9 +28,10 @@ fn encode_gif(
     ).unwrap();
 
     // Encode each image.
-    for image in images {
+    let mut popped_image = images.pop_front();
+    while !popped_image.is_none() {
         // Become the owner of the image.
-        let mut image = Arc::try_unwrap(image).unwrap();
+        let mut image = Arc::try_unwrap(popped_image.unwrap()).unwrap();
 
         // Create the frame.
         let mut frame = gif::Frame::from_rgba(
@@ -42,6 +42,9 @@ fn encode_gif(
 
         // Write the frame.
         encoder.write_frame(&frame).unwrap();
+
+        // Get the next image.
+        popped_image = images.pop_front();
     }
 
     // Drop the encoder.
@@ -52,9 +55,13 @@ fn encode_gif(
 }
 
 pub fn do_post_processing(
-    images: Vec<Arc<Vec<u8>>>, w: u32, h: u32, framerate: u16,
+    images: VecDeque<Arc<Vec<u8>>>, w: u32, h: u32, framerate: u16,
     color_map: Option<Vec<u32>>,
 ) {
+    // Print out 'ABOUT_TO_ENCODE' so that any software hooking on this can
+    // show the user.
+    print!("ABOUT_TO_ENCODE");
+
     // Encode the video.
     if let Some(color_map) = color_map {
         encode_gif(images, w, h, framerate, color_map);

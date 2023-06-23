@@ -71,7 +71,7 @@ fn main() {
     });
 
     // Start the UI thread. This might block forever, but that's fine. The post capture flow will still run.
-    ui::render_ui();
+    ui::render_ui(args.x, args.y, args.width, args.height);
 
     // If we are get here, the UI thread did not block forever. Go ahead and join the capture flow thread.
     capture_flow_thread.join().unwrap();

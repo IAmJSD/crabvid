@@ -1,4 +1,4 @@
-use std::{sync::{Arc, Mutex, atomic::Ordering}, thread, time};
+use std::{sync::{Arc, Mutex, atomic::Ordering}, thread, time, collections::VecDeque};
 use screenshots::Screen;
 use crate::constants;
 
@@ -36,12 +36,12 @@ fn do_capture(screens: &Vec<Screen>, x: i32, y: i32, w: u32, h: u32) -> Option<V
 pub fn screenshotting_worker(
     framerate: u16, x: i32, y: i32, w: u32, h: u32, gif: bool,
     screenshot_stack: Arc<Mutex<constants::OptionalBoxedStack>>,
-) -> Vec<Arc<Vec<u8>>> {
+) -> VecDeque<Arc<Vec<u8>>> {
     // Get the sleep time for a frame.
     let sleep_time = 1000 / framerate;
 
     // Defines a vec of vec u8's.
-    let mut vecvec: Vec<Arc<Vec<u8>>> = Vec::new();
+    let mut vecvec: VecDeque<Arc<Vec<u8>>> = VecDeque::new();
 
     // Get the screens.
     let mut screens = Screen::all().unwrap();
@@ -81,7 +81,7 @@ pub fn screenshotting_worker(
         let image_clone = Arc::clone(&image);
 
         // Add to the vecvec.
-        vecvec.push(image);
+        vecvec.push_back(image);
 
         // If this is a gif, we should add to the stack.
         if gif {
