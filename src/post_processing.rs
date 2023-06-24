@@ -34,6 +34,7 @@ fn encode_gif(
         let mut image = Arc::try_unwrap(popped_image.unwrap()).unwrap();
 
         // Create the frame.
+        println!("{} {}", w, h);
         let mut frame = gif::Frame::from_rgba(
             w as u16, h as u16,
             image.as_mut_slice(),
@@ -58,10 +59,6 @@ pub fn do_post_processing(
     images: VecDeque<Arc<Vec<u8>>>, w: u32, h: u32, framerate: u16,
     color_map: Option<Vec<u32>>,
 ) {
-    // Print out 'ABOUT_TO_ENCODE' so that any software hooking on this can
-    // show the user.
-    print!("ABOUT_TO_ENCODE");
-
     // Encode the video.
     if let Some(color_map) = color_map {
         encode_gif(images, w, h, framerate, color_map);

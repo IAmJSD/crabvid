@@ -1,10 +1,10 @@
 use std::sync::{atomic::AtomicBool, Arc};
 
 // Defines if both threads should die.
-pub const SHOULD_DIE: AtomicBool = AtomicBool::new(false);
+pub static SHOULD_DIE: AtomicBool = AtomicBool::new(false);
 
 // Defines if this should be in a paused state.
-pub const PAUSED: AtomicBool = AtomicBool::new(false);
+pub static PAUSED: AtomicBool = AtomicBool::new(false);
 
 // Defines a stack.
 pub struct Stack<T> {

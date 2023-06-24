@@ -17,6 +17,9 @@ fn capture_flow_gif(framerate: u16, x: i32, y: i32, w: u32, h: u32, screenshot_s
     // Wait for the screenshotting worker to be done.
     let images = screenshotting::screenshotting_worker(framerate, x, y, w, h, true, screenshot_stack);
 
+    // Print out 'ABOUT_TO_ENCODE' so that any software hooking on this can show the user.
+    print!("ABOUT_TO_ENCODE");
+
     // Wait for the pallette generation worker to be done.
     let color_map = Some(pallette_gen_thread.join().unwrap());
 
@@ -30,6 +33,9 @@ fn capture_flow_gif(framerate: u16, x: i32, y: i32, w: u32, h: u32, screenshot_s
 fn capture_flow_mp4(framerate: u16, x: i32, y: i32, w: u32, h: u32, screenshot_stack: Arc<Mutex<constants::OptionalBoxedStack>>) {
     // Wait for the screenshotting worker to be done.
     let images = screenshotting::screenshotting_worker(framerate, x, y, w, h, false, screenshot_stack);
+
+    // Print out 'ABOUT_TO_ENCODE' so that any software hooking on this can show the user.
+    print!("ABOUT_TO_ENCODE");
 
     // Handle post processing.
     post_processing::do_post_processing(images, w, h, framerate, None);
@@ -70,9 +76,16 @@ fn main() {
         }
     });
 
+    // Make a thread to watch this and close the process on panic.
+    let panic_detection_thread = std::thread::spawn(move || {
+        if capture_flow_thread.join().is_err() {
+            std::process::exit(1);
+        }
+    });
+
     // Start the UI thread. This might block forever, but that's fine. The post capture flow will still run.
     ui::render_ui(args.x, args.y, args.width, args.height);
 
-    // If we are get here, the UI thread did not block forever. Go ahead and join the capture flow thread.
-    capture_flow_thread.join().unwrap();
+    // If we are get here, the UI thread did not block forever. Go ahead and join the capture flow panic detection thread.
+    panic_detection_thread.join().unwrap();
 }

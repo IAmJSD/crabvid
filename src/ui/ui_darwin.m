@@ -172,6 +172,16 @@ bool paused = false;
 }
 
 - (void)stop:(id)sender {
+    // Get the application and delegate.
+    NSApplication *application = [NSApplication sharedApplication];
+    UIApplicationDelegate* delegate = [application delegate];
+
+    // Close all running things.
+    [delegate.timer invalidate];
+    [delegate.window close];
+    for (NSWindow* window in delegate.windows) [window close];
+
+    // Call the callback.
     screenvidcap_darwin_args.stop_cb();
 }
 
