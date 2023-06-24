@@ -15,7 +15,8 @@ fn do_capture(screens: &Vec<Screen>, x: i32, y: i32, w: u32, h: u32) -> Option<V
         let info_height = info.height as i32;
         if x >= info.x && y >= info.y && x + w_i32 <= info.x + info_width && y + h_i32 <= info.y + info_height {
             // Get the image.
-            let image = screen.capture_area(x, y, w, h);
+            // TODO: Macos only?
+            let image = screen.capture_area(x, y, w / 2, h / 2);
 
             // Check if this is a error.
             if image.is_err() {
@@ -79,6 +80,16 @@ pub fn screenshotting_worker(
         }
         let image = Arc::new(image.unwrap());
         let image_clone = Arc::clone(&image);
+
+        // Check if it is possible with the number of pixels for it to be hxw.
+        if image.len() != image_size_bytes {
+            // This is a error. Panic.
+            panic!(
+                "Image size is not correct. This means the capture failed in terrible ways.
+Expected: {} bytes, got: {} bytes.",
+                 image_size_bytes, image.len()
+            );
+        }
 
         // Add to the vecvec.
         vecvec.push_back(image);

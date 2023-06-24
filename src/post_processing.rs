@@ -1,4 +1,4 @@
-use std::{sync::Arc, collections::VecDeque};
+use std::{sync::Arc, collections::VecDeque, io::Write};
 
 fn encode_mp4(images: VecDeque<Arc<Vec<u8>>>, w: u32, h: u32, framerate: u16) {
     // TODO
@@ -20,7 +20,7 @@ fn encode_gif(
     }
 
     // Create the gif encoder.
-    let stdout = std::io::stdout();
+    let mut stdout = std::io::stdout();
     let mut encoder = gif::Encoder::new(
         &stdout,
         w as u16, h as u16,
@@ -34,7 +34,6 @@ fn encode_gif(
         let mut image = Arc::try_unwrap(popped_image.unwrap()).unwrap();
 
         // Create the frame.
-        println!("{} {}", w, h);
         let mut frame = gif::Frame::from_rgba(
             w as u16, h as u16,
             image.as_mut_slice(),
@@ -51,8 +50,8 @@ fn encode_gif(
     // Drop the encoder.
     drop(encoder);
 
-    // Drop stdout.
-    drop(stdout);
+    // Flush stdout.
+    stdout.flush().unwrap();
 }
 
 pub fn do_post_processing(
