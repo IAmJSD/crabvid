@@ -115,7 +115,7 @@ bool paused = false;
             // Top
             rect = NSMakeRect(
                     screenvidcap_darwin_args.x - 1,
-                    topY, screenvidcap_darwin_args.w + 2, 1);
+                    topY + 1, screenvidcap_darwin_args.w + 2, 1);
         } else if (i == 1) {
             // Bottom
             rect = NSMakeRect(
@@ -123,12 +123,12 @@ bool paused = false;
                     bottomY, screenvidcap_darwin_args.w + 2, 1);
         } else if (i == 2) {
             // Left
-            rect = NSMakeRect(screenvidcap_darwin_args.x - 1,
-                              topY - height, 1, height);
+            rect = NSMakeRect(screenvidcap_darwin_args.x - 2,
+                              topY - height, 1, height + 2);
         } else {
             // Right
             rect = NSMakeRect((screenvidcap_darwin_args.x + screenvidcap_darwin_args.w) + 1,
-                              topY - height, 1, height);
+                              topY - height, 1, height + 2);
         }
         KeyWindow *window = [[KeyWindow alloc] initWithContentRect:rect
                                                        styleMask:NSWindowStyleMaskBorderless
