@@ -5,6 +5,7 @@ use std::path::PathBuf;
 #[cfg(target_os = "macos")]
 fn main() {
     // Only rerun on changes to the Obj-C code.
+    println!("cargo:rerun-if-changed=src/ui/ui_coordinates.c");
     println!("cargo:rerun-if-changed=src/ui/ui_darwin.h");
     println!("cargo:rerun-if-changed=src/ui/ui_darwin.m");
 

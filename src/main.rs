@@ -7,7 +7,9 @@ mod screenshotting;
 mod post_processing;
 mod ui;
 
-fn capture_flow_gif(framerate: u16, x: i32, y: i32, w: u32, h: u32, screenshot_stack: Arc<Mutex<constants::OptionalBoxedStack>>, announce_encode: bool) {
+fn capture_flow_gif(
+    framerate: u16, x: i32, y: i32, w: u32, h: u32, screenshot_stack: Arc<Mutex<constants::OptionalBoxedStack>>,
+) {
     // Start the pallette generation worker in a new thread.
     let s_ref = Arc::clone(&screenshot_stack);
     let pallette_gen_thread = std::thread::spawn(move || {
@@ -16,11 +18,6 @@ fn capture_flow_gif(framerate: u16, x: i32, y: i32, w: u32, h: u32, screenshot_s
 
     // Wait for the screenshotting worker to be done.
     let images = screenshotting::screenshotting_worker(framerate, x, y, w, h, true, screenshot_stack);
-
-    // Print out 'ABOUT_TO_ENCODE' so that any software hooking on this can show the user.
-    if announce_encode {
-        print!("ABOUT_TO_ENCODE");
-    }
 
     // Wait for the pallette generation worker to be done.
     let color_map = Some(pallette_gen_thread.join().unwrap());
@@ -32,14 +29,12 @@ fn capture_flow_gif(framerate: u16, x: i32, y: i32, w: u32, h: u32, screenshot_s
     std::process::exit(0);
 }
 
-fn capture_flow_mp4(framerate: u16, x: i32, y: i32, w: u32, h: u32, screenshot_stack: Arc<Mutex<constants::OptionalBoxedStack>>, announce_encode: bool) {
+fn capture_flow_mp4(
+    framerate: u16, x: i32, y: i32, w: u32, h: u32,
+    screenshot_stack: Arc<Mutex<constants::OptionalBoxedStack>>,
+) {
     // Wait for the screenshotting worker to be done.
     let images = screenshotting::screenshotting_worker(framerate, x, y, w, h, false, screenshot_stack);
-
-    // Print out 'ABOUT_TO_ENCODE' so that any software hooking on this can show the user.
-    if announce_encode {
-        print!("ABOUT_TO_ENCODE");
-    }
 
     // Handle post processing.
     post_processing::do_post_processing(images, w, h, framerate, None);
@@ -76,9 +71,9 @@ fn main() {
     // Start the capture flow in a new thread.
     let capture_flow_thread = std::thread::spawn(move || {
         if args.gif {
-            capture_flow_gif(args.framerate, args.x, args.y, args.width, args.height, screenshot_stack, args.announce_encode);
+            capture_flow_gif(args.framerate, args.x, args.y, args.width, args.height, screenshot_stack);
         } else {
-            capture_flow_mp4(args.framerate, args.x, args.y, args.width, args.height, screenshot_stack, args.announce_encode);
+            capture_flow_mp4(args.framerate, args.x, args.y, args.width, args.height, screenshot_stack);
         }
     });
 

@@ -11,5 +11,6 @@ cc = "1.0.79"
 
 [dependencies]
 clap = { version = "4.3.4", features = ["derive"] }
+fast_image_resize = "2.7.3"
 gif = "0.12.0"
 screenshots = { git = "https://github.com/IAmJSD/screenshots-rs" }
