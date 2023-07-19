@@ -1,10 +1,7 @@
-use std::{sync::Arc, collections::VecDeque, io::Write};
+use std::{collections::VecDeque, sync::Arc, io::Write, io::stdout};
+use gif::{Encoder, Frame};
 
-fn encode_mp4(images: VecDeque<Arc<Vec<u8>>>, w: u32, h: u32, framerate: u16) {
-    // TODO
-}
-
-fn encode_gif(
+pub fn encode_gif(
     mut images: VecDeque<Arc<Vec<u8>>>, w: u32, h: u32, framerate: u16,
     color_map: Vec<u32>,
 ) {
@@ -20,8 +17,8 @@ fn encode_gif(
     }
 
     // Create the gif encoder.
-    let mut stdout = std::io::stdout();
-    let mut encoder = gif::Encoder::new(
+    let mut stdout = stdout();
+    let mut encoder = Encoder::new(
         &stdout,
         w as u16, h as u16,
         &color_map_u8,
@@ -34,7 +31,7 @@ fn encode_gif(
         let mut image = Arc::try_unwrap(popped_image.unwrap()).unwrap();
 
         // Create the frame.
-        let mut frame = gif::Frame::from_rgba(
+        let mut frame = Frame::from_rgba(
             w as u16, h as u16,
             image.as_mut_slice(),
         );
@@ -52,16 +49,4 @@ fn encode_gif(
 
     // Flush stdout.
     stdout.flush().unwrap();
-}
-
-pub fn do_post_processing(
-    images: VecDeque<Arc<Vec<u8>>>, w: u32, h: u32, framerate: u16,
-    color_map: Option<Vec<u32>>,
-) {
-    // Encode the video.
-    if let Some(color_map) = color_map {
-        encode_gif(images, w, h, framerate, color_map);
-    } else {
-        encode_mp4(images, w, h, framerate);
-    }
 }
