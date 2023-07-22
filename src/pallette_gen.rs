@@ -57,7 +57,6 @@ pub fn pallette_generation_worker(
         vec_cap = 256;
     }
     let mut vec: Vec<u32> = Vec::with_capacity(vec_cap);
-    drop(vec_cap);
 
     // If the map length is <= 256, just plop the map into this.
     if map_len <= 256 {

@@ -14,3 +14,12 @@ clap = { version = "4.3.4", features = ["derive"] }
 fast_image_resize = "2.7.3"
 gif = "0.12.0"
 screenshots = { git = "https://github.com/IAmJSD/screenshots-rs" }
+
+[dependencies.windows]
+version = "0.48"
+features = [
+    "Win32_UI_WindowsAndMessaging",
+    "Win32_System_LibraryLoader",
+    "Win32_Graphics_Gdi",
+    "Win32_Foundation",
+]

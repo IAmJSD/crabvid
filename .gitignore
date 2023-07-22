@@ -1,2 +1,3 @@
 /target
 src/ui/ui_darwin_bindings.rs
+src/ui/ui_coordinates_bindings.rs

@@ -246,6 +246,7 @@ dependencies = [
  "fast_image_resize",
  "gif",
  "screenshots",
+ "windows",
 ]
 
 [[package]]
